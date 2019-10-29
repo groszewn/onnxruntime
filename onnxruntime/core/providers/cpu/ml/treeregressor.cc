@@ -6,11 +6,19 @@
 namespace onnxruntime {
 namespace ml {
 
-ONNX_CPU_OPERATOR_ML_KERNEL(
-    TreeEnsembleRegressor,
-    1,
-    KernelDefBuilder().TypeConstraint("T", DataTypeImpl::GetTensorType<float>()).MayInplace(0, 0),
-    TreeEnsembleRegressor<float>);
+#define ADD_IN_TYPE_TREE_ENSEMBLE_REGRESSOR_OP(in_type)                                                                                                                                          \
+  ONNX_CPU_OPERATOR_TYPED_ML_KERNEL(                                                                                                                                                              \
+      TreeEnsembleRegressor,                                                                                                                                                                     \
+      1,                                                                                                                                                                                          \
+      in_type,                                                                                                                                                                                    \
+      KernelDefBuilder().TypeConstraint("T", DataTypeImpl::GetTensorType<in_type>()).MayInplace(0, 0), \
+      TreeEnsembleRegressor<in_type>);
+
+ADD_IN_TYPE_TREE_ENSEMBLE_REGRESSOR_OP(float);
+ADD_IN_TYPE_TREE_ENSEMBLE_REGRESSOR_OP(double);
+ADD_IN_TYPE_TREE_ENSEMBLE_REGRESSOR_OP(int64_t);
+ADD_IN_TYPE_TREE_ENSEMBLE_REGRESSOR_OP(int32_t);
+
 
 template <typename T>
 TreeEnsembleRegressor<T>::TreeEnsembleRegressor(const OpKernelInfo& info)
