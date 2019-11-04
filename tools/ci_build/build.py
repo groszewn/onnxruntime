@@ -831,23 +831,23 @@ def generate_documentation(source_dir, build_dir, configs):
     for config in configs:
         #copy the gen_doc.py
         shutil.copy(os.path.join(source_dir,'tools','python','gen_doc.py'),
-                    os.path.join(build_dir,config, config))
+                    os.path.join(build_dir,config, 'gen_doc.py'))
         shutil.copy(os.path.join(source_dir,'tools','python','gen_opkernel_doc.py'),
-                    os.path.join(build_dir,config, config))
+                    os.path.join(build_dir,config, 'gen_opkernel_doc.py'))
 
         run_subprocess([
                         sys.executable,
                         'gen_doc.py',
                         '--output_path', operator_doc_path
                     ],
-                    cwd = os.path.join(build_dir,config, config))
+                    cwd = os.path.join(build_dir,config))
 
         run_subprocess([
                         sys.executable,
                         'gen_opkernel_doc.py',
                         '--output_path', opkernel_doc_path
                     ],
-                    cwd = os.path.join(build_dir,config, config))
+                    cwd = os.path.join(build_dir,config))
 
     docdiff = ''
     try:
