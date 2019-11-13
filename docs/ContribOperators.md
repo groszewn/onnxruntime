@@ -5,21 +5,37 @@
 
 * com.microsoft
   * <a href="#com.microsoft.AttnLSTM">com.microsoft.AttnLSTM</a>
+  * <a href="#com.microsoft.CDist">com.microsoft.CDist</a>
   * <a href="#com.microsoft.ConvTransposeWithDynamicPads">com.microsoft.ConvTransposeWithDynamicPads</a>
   * <a href="#com.microsoft.CropAndResize">com.microsoft.CropAndResize</a>
+  * <a href="#com.microsoft.DequantizeLinear">com.microsoft.DequantizeLinear</a>
   * <a href="#com.microsoft.ExpandDims">com.microsoft.ExpandDims</a>
   * <a href="#com.microsoft.FusedConv">com.microsoft.FusedConv</a>
   * <a href="#com.microsoft.FusedGemm">com.microsoft.FusedGemm</a>
   * <a href="#com.microsoft.GatherND">com.microsoft.GatherND</a>
+  * <a href="#com.microsoft.MatMulInteger16">com.microsoft.MatMulInteger16</a>
   * <a href="#com.microsoft.MaxpoolWithMask">com.microsoft.MaxpoolWithMask</a>
   * <a href="#com.microsoft.MurmurHash3">com.microsoft.MurmurHash3</a>
   * <a href="#com.microsoft.Pad">com.microsoft.Pad</a>
+  * <a href="#com.microsoft.QuantizeLinear">com.microsoft.QuantizeLinear</a>
   * <a href="#com.microsoft.Range">com.microsoft.Range</a>
   * <a href="#com.microsoft.ReduceSumInteger">com.microsoft.ReduceSumInteger</a>
   * <a href="#com.microsoft.SampleOp">com.microsoft.SampleOp</a>
   * <a href="#com.microsoft.Tokenizer">com.microsoft.Tokenizer</a>
   * <a href="#com.microsoft.Unique">com.microsoft.Unique</a>
   * <a href="#com.microsoft.WordConvEmbedding">com.microsoft.WordConvEmbedding</a>
+  * <sub>experimental</sub> <a href="#com.microsoft.Attention">com.microsoft.Attention</a>
+  * <sub>experimental</sub> <a href="#com.microsoft.EmbedLayerNormalization">com.microsoft.EmbedLayerNormalization</a>
+  * <sub>experimental</sub> <a href="#com.microsoft.Gelu">com.microsoft.Gelu</a>
+  * <sub>experimental</sub> <a href="#com.microsoft.SkipLayerNormalization">com.microsoft.SkipLayerNormalization</a>
+* com.microsoft.nchwc
+  * <a href="#com.microsoft.nchwc.AveragePool">com.microsoft.nchwc.AveragePool</a>
+  * <a href="#com.microsoft.nchwc.Conv">com.microsoft.nchwc.Conv</a>
+  * <a href="#com.microsoft.nchwc.GlobalAveragePool">com.microsoft.nchwc.GlobalAveragePool</a>
+  * <a href="#com.microsoft.nchwc.GlobalMaxPool">com.microsoft.nchwc.GlobalMaxPool</a>
+  * <a href="#com.microsoft.nchwc.MaxPool">com.microsoft.nchwc.MaxPool</a>
+  * <a href="#com.microsoft.nchwc.ReorderInput">com.microsoft.nchwc.ReorderInput</a>
+  * <a href="#com.microsoft.nchwc.ReorderOutput">com.microsoft.nchwc.ReorderOutput</a>
 
 ## com.microsoft
 ### <a name="com.microsoft.AttnLSTM"></a><a name="com.microsoft.attnlstm">**com.microsoft.AttnLSTM**</a>
@@ -231,6 +247,43 @@ This version of the operator has been available since version 1 of the 'com.micr
 </dl>
 
 
+### <a name="com.microsoft.CDist"></a><a name="com.microsoft.cdist">**com.microsoft.CDist**</a>
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft' operator set.
+
+#### Attributes
+
+<dl>
+<dt><tt>metric</tt> : string</dt>
+<dd>The distance metric to use. If a string, the distance function can be "braycurtis", "canberra", "chebyshev", "cityblock", "correlation", "cosine", "dice", "euclidean", "hamming", "jaccard", "jensenshannon", "kulsinski", "mahalanobis", "matching", "minkowski", "rogerstanimoto", "russellrao", "seuclidean", "sokalmichener", "sokalsneath", "sqeuclidean", "wminkowski", "yule".</dd>
+</dl>
+
+#### Inputs
+
+<dl>
+<dt><tt>A</tt> : T</dt>
+<dd>2D matrix with shape (M,N)</dd>
+<dt><tt>B</tt> : T</dt>
+<dd>2D matrix with shape (K,N)</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>C</tt> : T</dt>
+<dd>A 2D Matrix that represents the distance between each pair of the two collections of inputs.</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float), tensor(double)</dt>
+<dd>Constrains input to only numeric types.</dd>
+</dl>
+
+
 ### <a name="com.microsoft.ConvTransposeWithDynamicPads"></a><a name="com.microsoft.convtransposewithdynamicpads">**com.microsoft.ConvTransposeWithDynamicPads**</a>
 
 #### Version
@@ -334,6 +387,51 @@ This version of the operator has been available since version 1 of the 'com.micr
 </dl>
 
 
+### <a name="com.microsoft.DequantizeLinear"></a><a name="com.microsoft.dequantizelinear">**com.microsoft.DequantizeLinear**</a>
+
+  The linear dequantization operator. It consumes a quantized data, a scale, a zero point and computes the full precision data. 
+  The dequantization formula is y = (x - x_zero_point) * x_scale. 
+  Scale and zero point must have same shape. They must be either scalar (per tensor) or 1-D tensor (per 'axis').
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft' operator set.
+
+#### Attributes
+
+<dl>
+<dt><tt>axis</tt> : int</dt>
+<dd>The axis along which same quantization parameters are applied. It's optional.If it's not specified, it means per-tensor quantization and input 'x_scale' and 'x_zero_point' must be scalars.If it's specified, it means per 'axis' quantization and input 'x_scale' and 'x_zero_point' must be 1-D tensors.</dd>
+</dl>
+
+#### Inputs
+
+<dl>
+<dt><tt>x</tt> : T2</dt>
+<dd>N-D quantized Input tensor to be de-quantized.</dd>
+<dt><tt>x_scale</tt> : T1</dt>
+<dd>Scale for input 'x'. It could be a scalar or a 1-D tensor, which means a per-tensor or per-axis quantization.If it's a 1-D tensor, its number of elements should be equal to the dimension value of 'axis' dimension of input 'x'.</dd>
+<dt><tt>x_zero_point</tt> : T2</dt>
+<dd>Zero point for input 'x'. It could be a scalar or a 1-D tensor, which means a per-tensor or per-axis quantization.If it's a 1-D tensor, its number of elements should be equal to the dimension value of 'axis' dimension of input 'x'.</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>y</tt> : T1</dt>
+<dd>N-D full precision output tensor. It has same shape as input 'x'.</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T1</tt> : tensor(float)</dt>
+<dd>Constrain 'y', 'x_scale' to float tensors.</dd>
+<dt><tt>T2</tt> : tensor(int8), tensor(uint8)</dt>
+<dd>Constrain 'x_zero_point' and 'x' to 8-bit integer tensors.</dd>
+</dl>
+
+
 ### <a name="com.microsoft.ExpandDims"></a><a name="com.microsoft.expanddims">**com.microsoft.ExpandDims**</a>
 
   ExpandDims echo operator.
@@ -380,7 +478,7 @@ This version of the operator has been available since version 1 of the 'com.micr
 <dl>
 <dt><tt>activation</tt> : string</dt>
 <dd></dd>
-<dt><tt>alpha</tt> : float</dt>
+<dt><tt>activation_params</tt> : list of floats</dt>
 <dd></dd>
 <dt><tt>auto_pad</tt> : string</dt>
 <dd></dd>
@@ -522,6 +620,43 @@ This version of the operator has been available since version 1 of the 'com.micr
 <dd>Constrain input and output types to any tensor type.</dd>
 <dt><tt>Tind</tt> : tensor(int32), tensor(int64)</dt>
 <dd>Constrain indice type to int32 or int64</dd>
+</dl>
+
+
+### <a name="com.microsoft.MatMulInteger16"></a><a name="com.microsoft.matmulinteger16">**com.microsoft.MatMulInteger16**</a>
+
+  Matrix product that behaves like numpy.matmul: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.matmul.html.
+   The production MUST never overflow. The accumulation may overflow if and only if in 32 bits.
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft' operator set.
+
+#### Inputs
+
+<dl>
+<dt><tt>A</tt> : T1</dt>
+<dd>N-dimensional matrix A</dd>
+<dt><tt>B</tt> : T2</dt>
+<dd>N-dimensional matrix B</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T3</dt>
+<dd>Matrix multiply results from A * B</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T1</tt> : tensor(int16), tensor(uint16)</dt>
+<dd>Constrain input A data types as 16-bit integer tensor</dd>
+<dt><tt>T2</tt> : tensor(int16), tensor(uint16)</dt>
+<dd>Constrain input B data types as 16-bit integer tensor</dd>
+<dt><tt>T3</tt> : tensor(int32), tensor(uint32)</dt>
+<dd>Constrain output Y data types as 32-bit integer tensor.T3 must be tensor(uint32) when both T1 and T2 are tensor(uint16),or must be tensor(int32) when either T1 or T2 is tensor(int16).</dd>
 </dl>
 
 
@@ -667,6 +802,51 @@ This version of the operator has been available since version 1 of the 'com.micr
 <dl>
 <dt><tt>T</tt> : tensor(float16), tensor(float), tensor(double)</dt>
 <dd>Constrain input and output types to float tensors.</dd>
+</dl>
+
+
+### <a name="com.microsoft.QuantizeLinear"></a><a name="com.microsoft.quantizelinear">**com.microsoft.QuantizeLinear**</a>
+
+  The linear quantization operator. It consumes a full precision data, a scale, a zero point and computes the quantized data. 
+  The quantization formula is y = (x / y_scale) + y_zero_point. For (x / y_scale), it computes the nearest integer value to arg (in floating-point format), 
+   rounding halfway cases away from zero. Scale and zero point must have same shape. They must be either scalar (per tensor) or 1-D tensor (per 'axis').
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft' operator set.
+
+#### Attributes
+
+<dl>
+<dt><tt>axis</tt> : int</dt>
+<dd>The axis along which same quantization parameters are applied. It's optional.If it's not specified, it means per-tensor quantization and input 'x_scale' and 'x_zero_point' must be scalars.If it's specified, it means per 'axis' quantization and input 'x_scale' and 'x_zero_point' must be 1-D tensors.</dd>
+</dl>
+
+#### Inputs
+
+<dl>
+<dt><tt>x</tt> : T1</dt>
+<dd>N-D full precision Input tensor to be quantized.</dd>
+<dt><tt>y_scale</tt> : T1</dt>
+<dd>Scale for doing quantization to get 'y'. It could be a scalar or a 1-D tensor,which means a per-tensor or per-axis quantization. If it's a 1-D tensor, its number of elements should be equal to the dimension value of 'axis' dimension of input 'x'.</dd>
+<dt><tt>y_zero_point</tt> : T2</dt>
+<dd>Zero point for doing quantization to get 'y'. It could be a scalar or a 1-D tensor, which means a per-tensoror per-axis quantization. If it's a 1-D tensor, its number of elements should be equal to the dimension value of 'axis' dimension of input 'x'.</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>y</tt> : T2</dt>
+<dd>N-D quantized output tensor. It has same shape as input 'x'.</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T1</tt> : tensor(float)</dt>
+<dd>Constrain 'x', 'y_scale' to float tensors.</dd>
+<dt><tt>T2</tt> : tensor(int8), tensor(uint8)</dt>
+<dd>Constrain 'y_zero_point' and 'y' to 8-bit integer tensors.</dd>
 </dl>
 
 
@@ -855,11 +1035,11 @@ This version of the operator has been available since version 1 of the 'com.micr
 
 ### <a name="com.microsoft.Unique"></a><a name="com.microsoft.unique">**com.microsoft.Unique**</a>
 
-  Finds all the unique values (deduped list) present in the given input tensor. 
-                This operator returns 3 outputs. 
-                The first output tensor 'uniques' contains all of the unique elements of the input, 
+  Finds all the unique values (deduped list) present in the given input tensor.
+                This operator returns 3 outputs.
+                The first output tensor 'uniques' contains all of the unique elements of the input,
                 sorted in the same order that they occur in the input.
-                The second output tensor 'idx' is the same size as the input and it contains the index 
+                The second output tensor 'idx' is the same size as the input and it contains the index
                 of each value of the input in 'uniques'.
                 The third output tensor 'counts' contains the count of each element of 'uniques' in the input.
                 Example:
@@ -945,6 +1125,444 @@ This version of the operator has been available since version 1 of the 'com.micr
 <dd>Constrain to tensor(int32).</dd>
 <dt><tt>T1</tt> : tensor(float)</dt>
 <dd>Constrain to tensor(float).</dd>
+</dl>
+
+
+### <sub>experimental</sub> <a name="com.microsoft.Attention"></a><a name="com.microsoft.attention">**com.microsoft.Attention**</a>
+
+  Multi-Head Self Attention
+
+#### Version
+
+No versioning maintained for experimental ops.
+#### Attributes
+
+<dl>
+<dt><tt>num_heads</tt> : int (required)</dt>
+<dd>Number of attention heads</dd>
+</dl>
+
+#### Inputs
+
+<dl>
+<dt><tt>input</tt> : T</dt>
+<dd>3D input tensor with shape (batch_size, sequence_length, hidden_size), hidden_size = num_heads * head_size</dd>
+<dt><tt>weight</tt> : T</dt>
+<dd>2D input tensor with shape (hidden_size, 3 * hidden_size)</dd>
+<dt><tt>bias</tt> : T</dt>
+<dd>1D input tensor with shape (3 * hidden_size)</dd>
+<dt><tt>mask_index</tt> : M</dt>
+<dd>Attention mask index with shape (batch_size)</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>output</tt> : T</dt>
+<dd>3D output tensor with shape (batch_size, sequence_length, hidden_size)</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float), tensor(float16)</dt>
+<dd>Constrain input and output types to float tensors.</dd>
+<dt><tt>M</tt> : tensor(int32)</dt>
+<dd>Constrain mask index to integer types</dd>
+</dl>
+
+
+### <sub>experimental</sub> <a name="com.microsoft.EmbedLayerNormalization"></a><a name="com.microsoft.embedlayernormalization">**com.microsoft.EmbedLayerNormalization**</a>
+
+  Embedding Layer Normalization
+
+#### Version
+
+No versioning maintained for experimental ops.
+#### Inputs
+
+<dl>
+<dt><tt>input_ids</tt> : T1</dt>
+<dd>2D words IDs with shape (batch_size, sequence_length)</dd>
+<dt><tt>segment_ids</tt> : T1</dt>
+<dd>2D segment IDs with shape (batch_size, sequence_length)</dd>
+<dt><tt>mask</tt> : T1</dt>
+<dd>2D attention mask with shape (batch_size, sequence_length)</dd>
+<dt><tt>word_embedding</tt> : T</dt>
+<dd>2D with shape (,hidden_size)</dd>
+<dt><tt>position_embedding</tt> : T</dt>
+<dd>2D with shape (, hidden_size)</dd>
+<dt><tt>segment_embedding</tt> : T</dt>
+<dd>2D with shape (, hidden_size)</dd>
+<dt><tt>gamma</tt> : T</dt>
+<dd>1D gamma tensor for layer normalization with shape (hidden_size)</dd>
+<dt><tt>beta</tt> : T</dt>
+<dd>1D beta tensor for layer normalization  with shape (hidden_size)</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>output</tt> : T</dt>
+<dd>3D output tensor with shape (batch_size, sequence_length, hidden_size)</dd>
+<dt><tt>mask_index</tt> : T1</dt>
+<dd>1D mask_index tensor with shape (batch_size)</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T1</tt> : tensor(int32)</dt>
+<dd>Constrain input and output integer tensors types</dd>
+<dt><tt>T</tt> : tensor(float), tensor(float16)</dt>
+<dd>Constrain input and output float tensors types.</dd>
+</dl>
+
+
+### <sub>experimental</sub> <a name="com.microsoft.Gelu"></a><a name="com.microsoft.gelu">**com.microsoft.Gelu**</a>
+
+  Gelu
+
+#### Version
+
+No versioning maintained for experimental ops.
+#### Inputs
+
+<dl>
+<dt><tt>X</tt> : T</dt>
+<dd>The input data as Tensor.</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T</dt>
+<dd>The output.</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float16), tensor(float), tensor(double)</dt>
+<dd>Constrain input and output types to float tensors.</dd>
+</dl>
+
+
+### <sub>experimental</sub> <a name="com.microsoft.SkipLayerNormalization"></a><a name="com.microsoft.skiplayernormalization">**com.microsoft.SkipLayerNormalization**</a>
+
+  Skip and Layer Normalization Fusion
+
+#### Version
+
+No versioning maintained for experimental ops.
+#### Inputs
+
+<dl>
+<dt><tt>input</tt> : T</dt>
+<dd>3D input tensor with shape (batch_size, sequence_length, hidden_size)</dd>
+<dt><tt>skip</tt> : T</dt>
+<dd>3D skip tensor with shape (batch_size, sequence_length, hidden_size)</dd>
+<dt><tt>gamma</tt> : T</dt>
+<dd>1D input tensor with shape (hidden_size)</dd>
+<dt><tt>beta</tt> : T</dt>
+<dd>1D skip tensor with shape (hidden_size</dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>output</tt> : T</dt>
+<dd>3D output tensor with shape (batch_size, sequence_length, hidden_size)</dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float), tensor(float16)</dt>
+<dd>Constrain input and output types to float or half tensors.</dd>
+</dl>
+
+
+## com.microsoft.nchwc
+### <a name="com.microsoft.nchwc.AveragePool"></a><a name="com.microsoft.nchwc.averagepool">**com.microsoft.nchwc.AveragePool**</a>
+
+  For internal use.
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft.nchwc' operator set.
+
+#### Attributes
+
+<dl>
+<dt><tt>auto_pad</tt> : string</dt>
+<dd></dd>
+<dt><tt>ceil_mode</tt> : int</dt>
+<dd></dd>
+<dt><tt>count_include_pad</tt> : int</dt>
+<dd></dd>
+<dt><tt>dilations</tt> : list of ints</dt>
+<dd></dd>
+<dt><tt>kernel_shape</tt> : list of ints (required)</dt>
+<dd></dd>
+<dt><tt>pads</tt> : list of ints</dt>
+<dd></dd>
+<dt><tt>strides</tt> : list of ints</dt>
+<dd></dd>
+</dl>
+
+#### Inputs
+
+<dl>
+<dt><tt>X</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float)</dt>
+<dd>Constrain input and output types to float tensors</dd>
+</dl>
+
+
+### <a name="com.microsoft.nchwc.Conv"></a><a name="com.microsoft.nchwc.conv">**com.microsoft.nchwc.Conv**</a>
+
+  For internal use.
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft.nchwc' operator set.
+
+#### Attributes
+
+<dl>
+<dt><tt>activation</tt> : string</dt>
+<dd></dd>
+<dt><tt>activation_params</tt> : list of floats</dt>
+<dd></dd>
+<dt><tt>auto_pad</tt> : string</dt>
+<dd></dd>
+<dt><tt>dilations</tt> : list of ints</dt>
+<dd></dd>
+<dt><tt>group</tt> : int</dt>
+<dd></dd>
+<dt><tt>kernel_shape</tt> : list of ints</dt>
+<dd></dd>
+<dt><tt>pads</tt> : list of ints</dt>
+<dd></dd>
+<dt><tt>strides</tt> : list of ints</dt>
+<dd></dd>
+</dl>
+
+#### Inputs (2 - 4)
+
+<dl>
+<dt><tt>X</tt> : T</dt>
+<dd></dd>
+<dt><tt>W</tt> : T</dt>
+<dd></dd>
+<dt><tt>B</tt> (optional) : T</dt>
+<dd></dd>
+<dt><tt>Sum</tt> (optional) : T</dt>
+<dd></dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float)</dt>
+<dd>Constrain input and output types to float tensors</dd>
+</dl>
+
+
+### <a name="com.microsoft.nchwc.GlobalAveragePool"></a><a name="com.microsoft.nchwc.globalaveragepool">**com.microsoft.nchwc.GlobalAveragePool**</a>
+
+  For internal use.
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft.nchwc' operator set.
+
+#### Inputs
+
+<dl>
+<dt><tt>X</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float)</dt>
+<dd>Constrain input and output types to float tensors</dd>
+</dl>
+
+
+### <a name="com.microsoft.nchwc.GlobalMaxPool"></a><a name="com.microsoft.nchwc.globalmaxpool">**com.microsoft.nchwc.GlobalMaxPool**</a>
+
+  For internal use.
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft.nchwc' operator set.
+
+#### Inputs
+
+<dl>
+<dt><tt>X</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float)</dt>
+<dd>Constrain input and output types to float tensors</dd>
+</dl>
+
+
+### <a name="com.microsoft.nchwc.MaxPool"></a><a name="com.microsoft.nchwc.maxpool">**com.microsoft.nchwc.MaxPool**</a>
+
+  For internal use.
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft.nchwc' operator set.
+
+#### Attributes
+
+<dl>
+<dt><tt>auto_pad</tt> : string</dt>
+<dd></dd>
+<dt><tt>ceil_mode</tt> : int</dt>
+<dd></dd>
+<dt><tt>dilations</tt> : list of ints</dt>
+<dd></dd>
+<dt><tt>kernel_shape</tt> : list of ints (required)</dt>
+<dd></dd>
+<dt><tt>pads</tt> : list of ints</dt>
+<dd></dd>
+<dt><tt>storage_order</tt> : int</dt>
+<dd></dd>
+<dt><tt>strides</tt> : list of ints</dt>
+<dd></dd>
+</dl>
+
+#### Inputs
+
+<dl>
+<dt><tt>X</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float)</dt>
+<dd>Constrain input and output types to float tensors</dd>
+</dl>
+
+
+### <a name="com.microsoft.nchwc.ReorderInput"></a><a name="com.microsoft.nchwc.reorderinput">**com.microsoft.nchwc.ReorderInput**</a>
+
+  For internal use.
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft.nchwc' operator set.
+
+#### Inputs
+
+<dl>
+<dt><tt>X</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float), tensor(int8), tensor(uint8)</dt>
+<dd>Constrain input and output types to float/quantized tensors</dd>
+</dl>
+
+
+### <a name="com.microsoft.nchwc.ReorderOutput"></a><a name="com.microsoft.nchwc.reorderoutput">**com.microsoft.nchwc.ReorderOutput**</a>
+
+  For internal use.
+
+#### Version
+
+This version of the operator has been available since version 1 of the 'com.microsoft.nchwc' operator set.
+
+#### Attributes
+
+<dl>
+<dt><tt>channels</tt> : int</dt>
+<dd></dd>
+</dl>
+
+#### Inputs
+
+<dl>
+<dt><tt>X</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Outputs
+
+<dl>
+<dt><tt>Y</tt> : T</dt>
+<dd></dd>
+</dl>
+
+#### Type Constraints
+
+<dl>
+<dt><tt>T</tt> : tensor(float), tensor(int8), tensor(uint8)</dt>
+<dd>Constrain input and output types to float/quantized tensors</dd>
 </dl>
 
 
